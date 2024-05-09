@@ -1,3 +1,6 @@
+This is my first fork, I will be, next time, upload my fixes for the timer. Please wait for the fixes, thank you for understanding.
+
+
 # PCF8583
 
 PCF8583 Real Time Clock and Event Counter Library for Arduino
