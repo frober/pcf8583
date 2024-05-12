@@ -2,6 +2,7 @@
 
   PCF8583 RTC and Event Counter Library for Arduino
   Copyright (C) 2013-2018 by Xose Pérez <xose dot perez at gmail dot com>
+                     2023 by frober
 
   The PCF8583 library is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -49,6 +50,15 @@ void PCF8583::reset() {
     Wire.write((byte)0x00);    // 10 set year offset to 0
     Wire.write((byte)0x00);    // 11 set last read value for year to 0
 
+    Wire.endTransmission();
+
+}
+
+void PCF8583::begin() {
+
+    Wire.beginTransmission(_address);
+    Wire.write(LOCATION_CONTROL);
+    Wire.write((byte)0x04);    // 00 control/status (alarm enabled by default)
     Wire.endTransmission();
 
 }
@@ -201,11 +211,46 @@ void PCF8583::setDateTime(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, u
 // Only daily alarms support for now
 void PCF8583::setAlarm(uint8_t sec, uint8_t min, uint8_t hour) {
     Wire.beginTransmission(_address);
-    Wire.write(LOCATION_ALARM_SECONDS);
+    Wire.write(LOCATION_ALARM_SECONDS); // Set the register pointer to (0x09)
+    Wire.write(0x00); // Set 00 at milisec
     Wire.write(byte2bcd(constrain(sec, 0, 59)));
     Wire.write(byte2bcd(constrain(min, 0, 59)));
     Wire.write(byte2bcd(constrain(hour, 0, 23)));
+    Wire.write(0x00);  // Set 00 at day
     Wire.endTransmission();
+}
+
+// Get the alarm at 0x09 adress  return array
+AlarmTime PCF8583::getAlarm(void) {
+	
+	AlarmTime a;
+	uint8_t values[4];
+	
+    Wire.beginTransmission(_address);
+    Wire.write(0x0A); // Set the register pointer to (0x0A)
+    Wire.endTransmission();
+
+    Wire.requestFrom(_address, 4); // Read 4 values
+
+    values[0] = bcd2byte(Wire.read());     // second
+    values[1] = bcd2byte(Wire.read());     // minute
+    values[2] = bcd2byte(Wire.read());     // hour
+	values[3] = bcd2byte(Wire.read());     // date
+
+	/*
+    Wire.beginTransmission(_address);
+    Wire.write(0x0E);
+    Wire.endTransmission();
+
+    Wire.requestFrom(_address, 1); // Read weekday value
+    values[4] = bcd2byte(Wire.read());   //month
+	*/
+	
+	a.second = values[0];
+    a.minute = values[1];
+    a.hour = values[2];
+	a.day = values[3];
+    return a;
 }
 
 void PCF8583::setCountAlarm(unsigned long count) {
@@ -215,25 +260,25 @@ void PCF8583::setCountAlarm(unsigned long count) {
 void PCF8583::enableAlarm() {
     uint8_t control;
 
-    control = getRegister(LOCATION_CONTROL);
-    control |= 0x04;
+    //control = getRegister(LOCATION_CONTROL);
+    control = 0x04;  // |=
     setRegister(LOCATION_CONTROL, control);
 
-    control = getRegister(LOCATION_ALARM_CONTROL);
-    control |= 0x90;
+    //control = getRegister(LOCATION_ALARM_CONTROL);
+    control = 0x90;  // |= daily alarm set
     setRegister(LOCATION_ALARM_CONTROL, control);
 
 }
 
 void PCF8583::disableAlarm() {
-    uint8_t control = getRegister(LOCATION_ALARM_CONTROL);
-    control &= 0x6F;
+    //uint8_t control = getRegister(LOCATION_ALARM_CONTROL);
+    uint8_t control = 0x10; // &=0x6F   0x10
     setRegister(LOCATION_ALARM_CONTROL, control);
 }
 
 void PCF8583::clearInterrupt() {
-    uint8_t control = getRegister(LOCATION_ALARM_CONTROL);
-    control &= 0x6F;
+    //uint8_t control = getRegister(LOCATION_ALARM_CONTROL);
+    uint8_t control = 0x10;  // &=0x6F  0x10
     setRegister(LOCATION_ALARM_CONTROL, control);
 }
 
