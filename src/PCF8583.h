@@ -2,6 +2,7 @@
 
   PCF8583 RTC and Event Counter Library for Arduino
   Copyright (C) 2013-2018 by Xose Pérez <xose dot perez at gmail dot com>
+                     2023 by frober
 
   The PCF8583 library is free software: you can redistribute it and/or modify
   it under the terms of the GNU Lesser General Public License as published by
@@ -36,7 +37,7 @@
 #define LOCATION_YEAR 0x07
 
 #define LOCATION_ALARM_CONTROL 0x08
-#define LOCATION_ALARM_SECONDS 0x10
+#define LOCATION_ALARM_SECONDS 0x09 //0x10
 
 #define LOCATION_COUNTER 0x01
 
@@ -61,6 +62,15 @@
 #define BASE_YEAR 2012
 #define ALARM_ANY 99
 
+
+struct AlarmTime
+{
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
+};
+
 class PCF8583 {
 
     public:
@@ -68,6 +78,8 @@ class PCF8583 {
         PCF8583(uint8_t address);
         void reset(); // resets chip to factory values
         void reset(uint8_t mode); // resets specific registers
+
+        void begin(); // set alarm on 
 
         void setMode(uint8_t mode);
         uint8_t getMode();
@@ -96,6 +108,7 @@ class PCF8583 {
 
         // Alarm
         void setAlarm(uint8_t sec, uint8_t min, uint8_t hour);
+        AlarmTime getAlarm(void); // return a struct
         void setCountAlarm(unsigned long count);
         void enableAlarm(); // set alarm flag
         void disableAlarm(); // clear alarm flag
@@ -117,6 +130,8 @@ class PCF8583 {
         uint8_t bcd2byte(uint8_t value);
 
         uint8_t _address;
+		
+		uint8_t arr[4];
 
 };
 
