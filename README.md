@@ -1,9 +1,5 @@
 This is a fork from https://github.com/xoseperez/pcf8583    
 
-This is my first fork, I will be, next time, upload my fixes for the alarm timer. Please wait for the fixes, thank you for understanding.    
-Is done...   
-
-
 ## PCF8583
 
 PCF8583 Real Time Clock and Event Counter Library for Arduino
@@ -15,9 +11,6 @@ PCF8583 Real Time Clock and Event Counter Library for Arduino
 fix some Register for the alarm function   
 new getAlarm()   
    
-### Todo:   
-example for use the alarm function
-
 ### Documentation
 
 TBD :(
