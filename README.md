@@ -4,7 +4,7 @@ This is a fork from https://github.com/xoseperez/pcf8583
 
 PCF8583 Real Time Clock and Event Counter Library for Arduino
 
-[![version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](CHANGELOG.md)
+[![version](https://img.shields.io/badge/version-1.1.0-brightgreen.svg)](CHANGELOG.md)
 [![license](https://img.shields.io/badge/license-LGPL--3.0-orange.svg)](LICENSE)
 
 ### Changes:   
